@@ -1,7 +1,19 @@
 import express from 'express';
+import cors from 'cors';
 import { HashbrownOpenAI } from '@hashbrownai/openai';
+const allowedOrigins = [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/];
 
 const app = express()
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.some((pattern) => pattern.test(origin))) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+  methods: ['GET', 'POST', 'OPTIONS']
+}));
+app.use(express.json());
 const port = process.env.PORT || 3333;
 
 app.get('/', (req, res) => {
